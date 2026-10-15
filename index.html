@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ユーザー別X検索</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono&family=Noto+Serif+JP:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#14110d;--panel:#1d1913;--line:#3a3226;--gold:#d4a24c;--text:#ece4d3;--dim:#9b9078}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--text);font-family:'Noto Serif JP',serif;display:flex;flex-direction:column;height:100dvh;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+h1{font-size:1rem;font-weight:600;margin:0;padding:.7rem .9rem .3rem;letter-spacing:.04em}
+form{display:flex;gap:.5rem;padding:.3rem .9rem .6rem}
+input{flex:1;min-width:0;background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:3px;padding:.6rem .7rem;font:inherit;font-size:16px}
+input::placeholder{color:var(--dim)}
+button{font:inherit;cursor:pointer}
+.go{background:var(--gold);color:#1a140a;border:0;border-radius:3px;padding:0 1rem;font-weight:600}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+#users{display:flex;flex-wrap:wrap;gap:.4rem;padding:0 .9rem;max-height:6.6rem;overflow-y:auto}
+.chip{background:transparent;color:var(--text);border:1px solid var(--line);border-radius:999px;padding:.3rem .75rem;font-family:'DM Mono',monospace;font-size:.82rem}
+.chip[aria-pressed="true"]{background:var(--gold);border-color:var(--gold);color:#1a140a}
+#note{margin:.5rem .9rem .4rem;font-size:.75rem;color:var(--dim)}
+#bar{display:flex;justify-content:space-between;align-items:center;padding:0 .9rem .3rem;font-size:.78rem;color:var(--dim)}
+#open{color:var(--gold)}
+#res{flex:1;min-height:0;overflow:auto;margin:0 .6rem .6rem;background:#f6f1e4;color:#222;border:1px solid var(--gold);border-radius:3px;padding:.4rem}
+#hint{margin:.8rem;font-size:.85rem;color:#5b5240;line-height:1.7}
+</style>
+</head>
+<body>
+<h1>ユーザー別X検索</h1>
+
+<form id="f">
+  <input id="kw" type="search" placeholder="キーワード(空欄ならユーザーの投稿全般)" autocomplete="off">
+  <button class="go" type="submit">検索</button>
+</form>
+
+<div id="users" role="group" aria-label="対象ユーザー"></div>
+<p id="note"></p>
+
+<div id="bar"><span>検索結果</span><a id="open" href="#" target="_blank" rel="noopener" hidden>Googleで開く</a></div>
+<div id="res">
+  <p id="hint">ユーザーを選び、キーワードを入れて検索してください。</p>
+  <div class="gcse-searchresults-only" data-gname="xs"></div>
+</div>
+
+<script>
+/* ===== 設定(ここだけ編集) ===== */
+// 対象ユーザー(@なし)。ここに追加していく
+const USERS_RAW = [
+  'shinjukuacc',
+];
+// Googleプログラム可能検索エンジンの検索エンジンID(cx)。空なら結果を新しいタブで開く
+const CX = '';
+/* ============================== */
+
+const $ = id => document.getElementById(id);
+const USERS = USERS_RAW.map(s => s.replace(/^@/, '')).filter(s => /^\w{1,15}$/.test(s));
+const sel = new Set();
+let cse = null;
+
+function updateNote(){
+  $('note').textContent = sel.size
+    ? `選択中: ${[...sel].map(u => '@' + u).join(' ')}`
+    : '未選択のときは、登録ユーザー全員が対象です。';
+}
+
+USERS.forEach(u => {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'chip';
+  b.textContent = '@' + u;
+  b.setAttribute('aria-pressed', 'false');
+  b.addEventListener('click', () => {
+    sel.has(u) ? sel.delete(u) : sel.add(u);
+    b.setAttribute('aria-pressed', String(sel.has(u)));
+    updateNote();
+  });
+  $('users').appendChild(b);
+});
+updateNote();
+
+function buildQuery(){
+  const kw = $('kw').value.trim();
+  const targets = [...(sel.size ? sel : USERS)];
+  const sites = targets.flatMap(u => [`site:x.com/${u}`, `site:twitter.com/${u}`]).join(' OR ');
+  return (kw ? kw + ' ' : '') + `(${sites})`;
+}
+
+if (CX) {
+  window.__gcse = { callback(){ cse = google.search.cse.element.getElement('xs'); } };
+  const s = document.createElement('script');
+  s.async = true;
+  s.src = 'https://cse.google.com/cse.js?cx=' + encodeURIComponent(CX);
+  document.head.appendChild(s);
+}
+
+$('f').addEventListener('submit', e => {
+  e.preventDefault();
+  if (!USERS.length) { $('hint').textContent = 'USERS_RAW にユーザー名を追加してください。'; return; }
+  const q = buildQuery();
+  const url = 'https://www.google.com/search?q=' + encodeURIComponent(q);
+  $('open').href = url;
+  $('open').hidden = false;
+  if (CX && cse) {
+    $('hint').hidden = true;
+    cse.execute(q);
+  } else if (CX) {
+    $('hint').hidden = false;
+    $('hint').textContent = '検索エンジンを読み込み中です。少し待ってからもう一度押してください。';
+  } else {
+    $('hint').hidden = false;
+    $('hint').textContent = 'Googleの検索結果を新しいタブで開きました。';
+    window.open(url, '_blank', 'noopener');
+  }
+});
+</script>
+</body>
+</html>
