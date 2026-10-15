@@ -1,2 +1,5 @@
-# post-search
-Search posts by a specific X user with a UI powered by Google Programmable Search Engine.
+[![License](https://img.shields.io/github/license/24-blog/post-search)](LICENSE)
+
+
+⚠️COPYRIGHT<br>
+All non-code text authored by the repository owner is licensed under CC BY-NC-ND 4.0.
