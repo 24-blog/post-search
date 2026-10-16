@@ -1,6 +1,6 @@
-## My Side Project
+## Follow
 
-| User | Account | 
+| User ID | Account | 
 | :--- | :--- | 
 | @shukan_shincho | 週刊新潮 |
 | @shukan_bunshun | 週刊文春 |
