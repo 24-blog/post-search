@@ -1,8 +1,8 @@
 [![License](https://img.shields.io/github/license/24-blog/post-search)](LICENSE)
 
 
-⚠️COPYRIGHT<br>
-All non-code text authored by the repository owner is licensed under CC BY-NC-ND 4.0.
+### 動作環境について
+検索結果はGoogleインデックスの状況やXの仕様に依存するため網羅性・正確性は保証されません。Yahoo!リアルタイム検索を開く機能は同サービスの仕様に依存します。本ツールは「Google、X、LINEヤフー」とは関係のない非公式ツールです。
 
 
 ### For Myself
