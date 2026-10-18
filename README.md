@@ -11,6 +11,7 @@
 | @nikkei | 日経新聞 |
 | @Sankei_news | 産経新聞 |
 | @kyodo_official | 共同通信 |
+| @polymarketjapan | ポリマーケット |
 
 
 ### For Myself
