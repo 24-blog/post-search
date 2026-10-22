@@ -2,6 +2,8 @@
 
 | Indexed | Account | 
 | :--- | :--- | 
+| @PressSec_JP | 内閣広報 |
+| @takaichi_sanae | 当代総理 |
 | @shukan_shincho | 週刊新潮 |
 | @shukan_bunshun | 週刊文春 |
 | @nhk_news | NHK |
