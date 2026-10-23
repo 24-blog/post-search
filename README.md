@@ -1,4 +1,4 @@
-## Index Status (2026.10.23)
+### Index Status (2026.10.23)
 
 | Indexed | Account | 
 | :--- | :--- | 
