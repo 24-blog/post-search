@@ -14,6 +14,7 @@
 | @Sankei_news | 産経新聞 |
 | @kyodo_official | 共同通信 |
 | @polymarketjapan | ポリマーケット |
+| @YahooNewsTopics | Yahoo!ニュース |
 
 
 ### For Myself
